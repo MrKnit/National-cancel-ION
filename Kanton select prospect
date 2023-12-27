@@ -2,7 +2,8 @@ getgenv().Settings = {
     Farming = {
         FarmMode = "VIP",
         FarmRadius = 60,
-        AutoCollect = true
+        AutoCollect = false,
+        SuperAutoCollect = true
     },
 
     Automation = {
@@ -433,6 +434,29 @@ if Settings.Farming.AutoCollect then
                     _.Network.Invoke("Redeem Free Gift", tonumber(string.match(v.Parent.Name, "%d+")))
                 end
             end
+        end
+    end)()
+end
+
+if Settings.Farming.SuperAutoCollect then
+    coroutine.wrap(function()
+        local a = game.Players.LocalPlayer.Character.HumanoidRootPart
+        local b = workspace.__THINGS
+
+        local function get()
+            local cf = a.CFrame
+            for i,v in pairs(b.Lootbags:GetChildren()) do
+            v:PivotTo(cf)
+            end
+            for i,v in pairs(b.Orbs:GetChildren()) do
+            v:PivotTo(cf)
+
+            end
+        end
+
+
+        while task.wait(0.5) do
+        get()
         end
     end)()
 end
