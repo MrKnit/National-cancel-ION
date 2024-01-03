@@ -3,7 +3,8 @@ getgenv().Settings = {
         FarmMode = "VIP",
         FarmRadius = 60,
         AutoCollect = false,
-        SuperAutoCollect = true
+        SuperAutoCollect = true,
+        FastPets = true
     },
 
     Automation = {
@@ -415,14 +416,14 @@ end
 if Settings.Farming.AutoCollect then
     coroutine.wrap(function()
         while task.wait(.3) do
-            --for _i,v in pairs(workspace["__THINGS"].Orbs:GetChildren()) do
-            --    _.Network.Fire("Orbs: Collect", { tonumber(v.Name) })
-            --end
-
-            local success, magnet = pcall(GetBestOfEnchant, "Magnet")
-            if success then
-                _.EnchantCmds.Equip(magnet)
+            for _i,v in pairs(workspace["__THINGS"].Orbs:GetChildren()) do
+                _.Network.Fire("Orbs: Collect", { tonumber(v.Name) })
             end
+
+            --local success, magnet = pcall(GetBestOfEnchant, "Magnet")
+            --if success then
+            --    _.EnchantCmds.Equip(magnet)
+            --end
 
             local Claim = getsenv(LocalPlayer.PlayerScripts.Scripts.Game["Lootbags Frontend"]).Claim
             for i,v in pairs(debug.getupvalue(Claim, 1)) do
@@ -459,6 +460,18 @@ if Settings.Farming.SuperAutoCollect then
         get()
         end
     end)()
+end
+
+local OldHooks = {}
+
+OldHooks.CalculateSpeedMultiplier = _.PlayerPet.CalculateSpeedMultiplier
+
+_.PlayerPet.CalculateSpeedMultiplier = function(...)
+    if getgenv().Settings.Farming.FastPets then
+        return 999
+    else
+        return OldHooks.CalculateSpeedMultiplier(...)
+    end
 end
 
 local rangeCircle = Instance.new("Part")
